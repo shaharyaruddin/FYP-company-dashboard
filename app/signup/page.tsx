@@ -3,28 +3,29 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { apiService } from "./api.service";
+import { apiService } from "../api.service";
 
-export default function LoginPage() {
+export default function SignupPage() {
     const router = useRouter();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: "",
+    });
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError("");
 
         try {
-            const response = await apiService.login(email, password);
-            // Store user info
-            localStorage.setItem("token", response.data!.token);
-            localStorage.setItem("user", JSON.stringify(response.data));
-
-            router.push("/dashboard");
+            await apiService.signup(formData.name, formData.email, formData.password);
+            // Store email for verification step
+            localStorage.setItem("verify_email", formData.email);
+            router.push("/verify");
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -36,8 +37,8 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
             <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
                 <div className="text-center mb-8">
-                    <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
-                    <p className="text-gray-500 mt-2">Sign in to your admin dashboard</p>
+                    <h1 className="text-2xl font-bold text-gray-900">Create Account</h1>
+                    <p className="text-gray-500 mt-2">Register your company admin account</p>
                 </div>
 
                 {error && (
@@ -46,15 +47,30 @@ export default function LoginPage() {
                     </div>
                 )}
 
-                <form onSubmit={handleLogin} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Company Name
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            required
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900"
+                            placeholder="Acme Corp"
+                            disabled={loading}
+                        />
+                    </div>
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Email Address
                         </label>
                         <input
                             type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             required
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900"
                             placeholder="admin@company.com"
@@ -69,8 +85,8 @@ export default function LoginPage() {
                         <div className="relative">
                             <input
                                 type={showPassword ? "text" : "password"}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 required
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 pr-10"
                                 placeholder="••••••••"
@@ -98,16 +114,16 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-2.5 rounded-lg transition duration-200"
+                        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-2.5 rounded-lg transition duration-200 mt-4"
                     >
-                        {loading ? "Signing In..." : "Sign In"}
+                        {loading ? "Creating Account..." : "Create Account"}
                     </button>
                 </form>
 
                 <div className="mt-6 text-center text-sm text-gray-600">
-                    Don't have an account?{" "}
-                    <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
-                        Sign up
+                    Already have an account?{" "}
+                    <Link href="/" className="text-blue-600 hover:text-blue-700 font-medium">
+                        Sign in
                     </Link>
                 </div>
             </div>
