@@ -69,4 +69,34 @@ export const apiService = {
         if (!res.ok) throw new Error(data.error || "Upload failed");
         return data;
     },
+
+    async getCollections(companyDbUrl: string): Promise<{ success: boolean; collections: string[] }> {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API_BASE_URL}/api/dbsync/collections`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ companyDbUrl }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to fetch collections");
+        return data;
+    },
+
+    async syncFromDB(companyDbUrl: string, collectionNames: string[]): Promise<any> {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API_BASE_URL}/api/dbsync`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ companyDbUrl, collectionNames }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "DB sync failed");
+        return data;
+    },
 };
