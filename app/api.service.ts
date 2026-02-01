@@ -15,6 +15,13 @@ export interface AuthResponse {
     };
 }
 
+export interface TokenStatus {
+    success: boolean;
+    tokens: number;
+    maxTokens: number;
+    active: boolean;
+}
+
 export const apiService = {
     async signup(name: string, email: string, password: string): Promise<AuthResponse> {
         const res = await fetch(`${API_BASE_URL}/api/auth/signup`, {
@@ -28,7 +35,6 @@ export const apiService = {
     },
 
     async verify(email: string, code: string): Promise<AuthResponse> {
-        // type is hardcoded to "signup" as per backend requirement for registration
         const res = await fetch(`${API_BASE_URL}/api/auth/verify`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -97,6 +103,13 @@ export const apiService = {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "DB sync failed");
+        return data;
+    },
+
+    async getTokenStatus(companyId: string): Promise<TokenStatus> {
+        const res = await fetch(`${API_BASE_URL}/api/token-status/${companyId}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to fetch token status");
         return data;
     },
 };

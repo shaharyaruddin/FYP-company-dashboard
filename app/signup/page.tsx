@@ -12,18 +12,20 @@ export default function SignupPage() {
         email: "",
         password: "",
     });
-    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError("");
 
         try {
             await apiService.signup(formData.name, formData.email, formData.password);
-            // Store email for verification step
             localStorage.setItem("verify_email", formData.email);
             router.push("/verify");
         } catch (err: any) {
@@ -34,98 +36,113 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-            <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-                <div className="text-center mb-8">
-                    <h1 className="text-2xl font-bold text-gray-900">Create Account</h1>
-                    <p className="text-gray-500 mt-2">Register your company admin account</p>
-                </div>
-
-                {error && (
-                    <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4 text-center">
-                        {error}
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Company Name
-                        </label>
-                        <input
-                            type="text"
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            required
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900"
-                            placeholder="Acme Corp"
-                            disabled={loading}
-                        />
+        <div className="dark">
+            <div className="h-screen flex items-center justify-center bg-slate-900 hero-gradient p-4 transition-all duration-500 relative overflow-hidden">
+                <div className="w-full max-w-md relative z-10 scale-[0.9] sm:scale-100 origin-center">
+                    {/* Brand Area */}
+                    <div className="text-center mb-6">
+                        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-600 text-white shadow-xl shadow-blue-500/20 mb-4 transform hover:scale-110 transition-transform duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9m0 0a9.015 9.015 0 0 1 8.716 2.253M12 3a9.015 9.015 0 0 0-8.716 2.253" />
+                            </svg>
+                        </div>
+                        <h1 className="text-3xl font-black tracking-tight text-white mb-2 leading-none uppercase">
+                            Join the Future
+                        </h1>
+                        <p className="text-blue-100/70 text-sm font-light">
+                            Create your corporate account in seconds
+                        </p>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Email Address
-                        </label>
-                        <input
-                            type="email"
-                            value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            required
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900"
-                            placeholder="admin@company.com"
-                            disabled={loading}
-                        />
-                    </div>
+                    <div className="glass-card rounded-[2rem] shadow-2xl p-6 sm:p-8 border border-white/10 relative overflow-hidden">
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-3 rounded-xl text-xs mb-4 flex items-center gap-3 animate-shake">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 flex-shrink-0">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" clipRule="evenodd" />
+                                </svg>
+                                {error}
+                            </div>
+                        )}
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Password
-                        </label>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                required
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 pr-10"
-                                placeholder="••••••••"
-                                disabled={loading}
-                            />
+                        <form onSubmit={handleSignup} className="space-y-4">
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-black text-blue-200 uppercase tracking-[0.2em] ml-1 opacity-90">
+                                    Full Name
+                                </label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    className="input-field shadow-inner py-2.5 text-sm"
+                                    placeholder="John Doe"
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-black text-blue-200 uppercase tracking-[0.2em] ml-1 opacity-90">
+                                    Company Email
+                                </label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                    className="input-field shadow-inner py-2.5 text-sm"
+                                    placeholder="john@company.com"
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-black text-blue-200 uppercase tracking-[0.2em] ml-1 opacity-90">
+                                    Secure Password
+                                </label>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                    className="input-field shadow-inner py-2.5 text-sm"
+                                    placeholder="••••••••"
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            <div className="flex items-center gap-3 px-1">
+                                <input type="checkbox" required className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-600 focus:ring-blue-500" />
+                                <span className="text-[10px] text-blue-100/80 font-black uppercase tracking-wider">
+                                    I agree to the <a href="#" className="text-blue-400 hover:underline">Terms</a>
+                                </span>
+                            </div>
+
                             <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                                type="submit"
+                                disabled={loading}
+                                className="btn-primary w-full mt-2 py-2.5 flex items-center justify-center gap-2 text-sm"
                             >
-                                {showPassword ? (
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                                    </svg>
-                                ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                )}
+                                {loading ? "Connecting..." : "Initiate Access"}
                             </button>
+                        </form>
+
+                        <div className="mt-6 pt-4 border-t border-white/5 text-center">
+                            <p className="text-blue-100/70 text-[10px] font-black uppercase tracking-widest">
+                                Already a member?{" "}
+                                <Link href="/" className="text-blue-400 hover:text-blue-300 transition-colors underline underline-offset-4">
+                                    Sign In
+                                </Link>
+                            </p>
                         </div>
                     </div>
-
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-2.5 rounded-lg transition duration-200 mt-4"
-                    >
-                        {loading ? "Creating Account..." : "Create Account"}
-                    </button>
-                </form>
-
-                <div className="mt-6 text-center text-sm text-gray-600">
-                    Already have an account?{" "}
-                    <Link href="/" className="text-blue-600 hover:text-blue-700 font-medium">
-                        Sign in
-                    </Link>
                 </div>
+
+                {/* Background Decorations */}
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[180px] translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] -translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
             </div>
         </div>
     );
