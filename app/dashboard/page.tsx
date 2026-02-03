@@ -65,10 +65,16 @@ export default function DashboardPage() {
         }
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        router.push("/");
+    const handleLogout = async () => {
+        try {
+            await apiService.logout();
+        } catch (error) {
+            console.error("Logout failed", error);
+        } finally {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            router.push("/");
+        }
     };
 
     if (!user) return null;

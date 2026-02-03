@@ -56,6 +56,17 @@ export const apiService = {
         return data;
     },
 
+    async logout(): Promise<AuthResponse> {
+        const res = await fetch(`${API_BASE_URL}/api/auth/logout`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+        });
+        const data = await res.json();
+        // Even if the backend fails, we should proceed with local logout, so strictly throwing might be optional depending on requirement
+        // But for consistency with other methods, we process the response.
+        return data;
+    },
+
     async uploadCSV(file: File, companyId: string): Promise<any> {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No auth token found");
